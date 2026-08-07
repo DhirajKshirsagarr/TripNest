@@ -43,9 +43,51 @@ app.get("/",(req,res)=>{
     
 // });
 
+// Index route
 app.get("/listing",async(req,res)=>{
     const allListings=await Listing.find({});
     res.render("listing/index.ejs",{allListings});
+})
+
+// new Route
+app.get("/listing/new",(req,res)=>{
+    res.render("listing/new.ejs");
+})
+
+// Create Route
+app.post("/listing",async(req,res)=>{
+    const newListing=new Listing(req.body.listing);
+    await newListing.save();
+    res.redirect("/listing");
+})
+
+// Show route
+app.get("/listing/:id",async(req,res)=>{
+    let {id}=req.params;
+    const listing= await Listing.findById(id);
+    res.render("listing/show.ejs",{listing});
+})
+
+// Edit Route
+app.get("/listing/:id/edit",async(req,res)=>{
+    let{id}=req.params;
+    let listing=await Listing.findById(id);
+    res.render("listing/edit.ejs",{listing});
+})
+
+// Update Route
+app.put("/listing/:id",async(req,res)=>{
+    let {id}=req.params;
+    await Listing.findByIdAndUpdate(id,{...req.body.listing});
+    res.redirect(`/listing/${id}`);
+})
+
+// Delete Route
+app.delete("/listing/:id",async(req,res)=>{
+    let{id}=req.params;
+    let delListing=await Listing.findByIdAndDelete(id);
+    console.log(delListing);
+    res.redirect("/listing");
 })
 
 app.listen(8080,()=>{
