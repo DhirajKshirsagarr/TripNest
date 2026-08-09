@@ -5,13 +5,14 @@ const path=require('path');
 const methodOverride=require('method-override');
 const Listing=require("./models/listing.js");
 const ejsMate=require("ejs-mate");
+const { title } = require('process');
 
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
 
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname,"public")));
+app.use(express.static(path.join(__dirname,"/public")));
 
 app.engine("ejs",ejsMate);
 
@@ -29,9 +30,7 @@ async function main(){
 }
 
 
-app.get("/",(req,res)=>{
-    res.send("Welcome to My Frist major project");
-})
+
 
 // app.get("/testListing",async(req,res)=>{
 //     let sampleListing=new Listing({
@@ -46,6 +45,10 @@ app.get("/",(req,res)=>{
 //     res.send("successful testing")
     
 // });
+
+app.get("/",(req,res)=>{
+    res.send("Welcome to My Frist major project");
+})
 
 // Index route
 app.get("/listing",async(req,res)=>{
@@ -97,3 +100,6 @@ app.delete("/listing/:id",async(req,res)=>{
 app.listen(8080,()=>{
     console.log("Server listining at Port : 8080");
 })
+
+// Listing.deleteMany({title:"Sai Palace"},{}).then((res)=>{console.log(res);
+// })
