@@ -18,7 +18,13 @@ body {
     color: #fe424d;
     font-size: 2rem;
 }
-
+.logo{
+    color: #fe424d;
+    font-size: 2rem;
+}
+.navbar-brand{
+    display: flex;
+}
 .nav-link {
     color: #222222 !important;
 }

@@ -8,7 +8,7 @@ const ejsMate = require("ejs-mate");
 const { title } = require('process');
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const { listingShema } = require("./schema.js");
+const { listingSchema } = require("./schema.js");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -50,18 +50,17 @@ async function main() {
 // });
 
 app.get("/", (req, res) => {
-    res.send("Welcome to My Frist major project");
+    res.redirect("/listing");
 })
 
-const validateListing=(req,res,next)=>{
-let {error}=listingShema.validate(req.body);
-
-if(error){
-    let errMsg=error.detailes.map((el)=>el.message).join(',');
-    throw new ExpressError(400,errMsg);
-}else{
-    next(); 
-}
+const validateListing = (req, res, next) => {
+    let { error } = listingSchema.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(',');
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
 }
 
 // Index route
@@ -76,7 +75,7 @@ app.get("/listing/new", (req, res) => {
 })
 
 // Create Route
-app.post("/listing",validateListing ,wrapAsync(async (req, res, next) => {
+app.post("/listing", validateListing, wrapAsync(async (req, res, next) => {
     const newListing = new Listing(req.body.listing);
 
     await newListing.save();
@@ -98,7 +97,7 @@ app.get("/listing/:id/edit", wrapAsync(async (req, res, next) => {
 }));
 
 // Update Route
-app.put("/listing/:id",validateListing, wrapAsync(async (req, res, next) => {
+app.put("/listing/:id", validateListing, wrapAsync(async (req, res, next) => {
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
     res.redirect(`/listing/${id}`);
@@ -118,7 +117,7 @@ app.all("/{*splat}", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found"));
 });
 
-app.use((err, req, res, nex) => {
+app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Somthing Went Wrong!" } = err;
     res.status(statusCode).render('error.ejs', { err });
     // res.status(statusCode).send(message);
