@@ -1,2 +1,2 @@
-# Airbnb-Clone
-This is my frist Major project. 
+# TripNest
+This is my first Major project. 
