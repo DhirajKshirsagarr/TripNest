@@ -9,6 +9,7 @@ const { title } = require('process');
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingSchema } = require("./schema.js");
+const Review=require("./models/review.js")
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -49,8 +50,8 @@ async function main() {
 
 // });
 
-app.get("/", (req, res) => {
-    res.redirect("/listing");
+app.get("/",(req, res) => {
+    res.send("TripNest")
 })
 
 const validateListing = (req, res, next) => {
@@ -110,6 +111,20 @@ app.delete("/listing/:id", wrapAsync(async (req, res, next) => {
     let delListing = await Listing.findByIdAndDelete(id);
     console.log(delListing);
     res.redirect("/listing");
+}));
+
+
+// Reviews
+app.post("/listing/:id/reviews",wrapAsync(async (req,res)=>{
+    let listing=await Listing.findById(req.params.id);
+    let newReview=new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    res.redirect(`/listing/${listing.id}`)
 }));
 
 // for all other requests
