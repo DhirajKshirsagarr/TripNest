@@ -8,7 +8,7 @@ const ejsMate = require("ejs-mate");
 const { title } = require('process');
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const { listingSchema } = require("./schema.js");
+const { listingSchema , reviewSchema } = require("./schema.js");
 const Review=require("./models/review.js")
 
 app.set("view engine", "ejs");
@@ -64,58 +64,69 @@ const validateListing = (req, res, next) => {
     }
 }
 
+
+const validateReview = (req, res, next) => {
+    let { error } = reviewSchema.validate(req.body);
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(',');
+        throw new ExpressError(400, errMsg);
+    } else {
+        next();
+    }
+}
+
 // Index route
-app.get("/listing", wrapAsync(async (req, res, next) => {
+app.get("/listings", wrapAsync(async (req, res, next) => {
     const allListings = await Listing.find({});
     res.render("listing/index.ejs", { allListings });
 }));
 
 // new Route
-app.get("/listing/new", (req, res) => {
+app.get("/listings/new", (req, res) => {
     res.render("listing/new.ejs");
 })
 
 // Create Route
-app.post("/listing", validateListing, wrapAsync(async (req, res, next) => {
+app.post("/listings", validateListing, wrapAsync(async (req, res, next) => {
     const newListing = new Listing(req.body.listing);
 
     await newListing.save();
-    res.redirect("/listing");
+    res.redirect("/listings");
 }));
 
 // Show route
-app.get("/listing/:id", wrapAsync(async (req, res, next) => {
+app.get("/listings/:id", wrapAsync(async (req, res, next) => {
     let { id } = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     res.render("listing/show.ejs", { listing });
 }));
 
 // Edit Route
-app.get("/listing/:id/edit", wrapAsync(async (req, res, next) => {
+app.get("/listings/:id/edit", wrapAsync(async (req, res, next) => {
     let { id } = req.params;
     let listing = await Listing.findById(id);
     res.render("listing/edit.ejs", { listing });
 }));
 
 // Update Route
-app.put("/listing/:id", validateListing, wrapAsync(async (req, res, next) => {
+app.put("/listings/:id", validateListing, wrapAsync(async (req, res, next) => {
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listing/${id}`);
+    res.redirect(`/listings/${id}`);
 }));
 
 
 // Delete Route
-app.delete("/listing/:id", wrapAsync(async (req, res, next) => {
+app.delete("/listings/:id", wrapAsync(async (req, res, next) => {
     let { id } = req.params;
     let delListing = await Listing.findByIdAndDelete(id);
     console.log(delListing);
-    res.redirect("/listing");
+    res.redirect("/listings");
 }));
 
 
 // Reviews
-app.post("/listing/:id/reviews",wrapAsync(async (req,res)=>{
+app.post("/listings/:id/reviews",validateReview,wrapAsync(async (req,res)=>{
     let listing=await Listing.findById(req.params.id);
     let newReview=new Review(req.body.review);
 
@@ -124,7 +135,7 @@ app.post("/listing/:id/reviews",wrapAsync(async (req,res)=>{
     await newReview.save();
     await listing.save();
 
-    res.redirect(`/listing/${listing.id}`)
+    res.redirect(`/listings/${listing.id}`)
 }));
 
 // for all other requests
