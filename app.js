@@ -8,9 +8,13 @@ const { title } = require('process');
 const ExpressError = require("./utils/ExpressError.js");
 const session=require("express-session");
 const flash=require("connect-flash");
+const passport=require("passport");
+const LocalStrategy=require("passport-local");
+const User=require("./models/user.js");
 
-const listings=require("./routes/listing.js");
-const reviews=require("./routes/reviews.js");
+const listingsRouter=require("./routes/listing.js");
+const reviewsRouter=require("./routes/reviews.js");
+const userRouter=require("./routes/user.js");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -51,14 +55,33 @@ app.get("/", (req, res) => {
 
 app.use(session(sessionOption));
 app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
     res.locals.error=req.flash("error"); 
     next();
 })
 
-app.use("/listings",listings);
-app.use("/listings/:id/reviews",reviews);
+app.get("/demoUser",async (req,res)=>{
+    let fackUser={
+        email:"student@gmail.com",
+        username:"abcd",
+    }
+
+    let registerUser=await User.register(fackUser,"pass1234");
+    res.send(registerUser);
+})
+
+app.use("/listings",listingsRouter);
+app.use("/listings/:id/reviews",reviewsRouter);
+app.use("/",userRouter);
 
 // for all other requests
 app.all("/{*splat}", (req, res, next) => {
