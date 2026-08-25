@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.engine("ejs", ejsMate);
     
 
-let MONGO_URL = "mongodb://127.0.0.1:27017/airbnb"
+let MONGO_URL = "mongodb://127.0.0.1:27017/TripNest"
 
 main().then(() => {
     console.log("connection build successfuly");
@@ -69,15 +69,15 @@ app.use((req,res,next)=>{
     next();
 })
 
-app.get("/demoUser",async (req,res)=>{
-    let fackUser={
-        email:"student@gmail.com",
-        username:"abcd",
-    }
+// app.get("/signup",async (req,res)=>{
+//     let fackUser={
+//         email:"student@gmail.com",
+//         username:"abcd",
+//     }
 
-    let registerUser=await User.register(fackUser,"pass1234");
-    res.send(registerUser);
-})
+//     let registerUser=await User.register(fackUser,"pass1234");
+//     res.send(registerUser);
+// })
 
 app.use("/listings",listingsRouter);
 app.use("/listings/:id/reviews",reviewsRouter);
