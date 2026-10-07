@@ -18,7 +18,6 @@ router.post("/signup", wrapAsync(async (req, res, next) => {
         console.log(registeredUser);
         req.logIn(registeredUser, (e) => {
             if (e) {
-                
                 return next(e);
             }
             req.flash('success', "Welcome to TripNest");
