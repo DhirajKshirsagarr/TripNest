@@ -18,13 +18,16 @@ body {
     color: #fe424d;
     font-size: 2rem;
 }
-.logo{
+
+.logo {
     color: #fe424d;
     font-size: 2rem;
 }
-.navbar-brand{
+
+.navbar-brand {
     display: flex;
 }
+
 .nav-link {
     color: #222222 !important;
 }
@@ -110,15 +113,21 @@ body {
 }
 
 /* Show page */
-.show-img{
+.show-img {
     height: 30vh;
 }
 
-.btns{
+.btns {
     display: flex;
 }
 
-.show-card{
+.show-card {
     padding-left: 0;
     padding-right: 0;
+}
+
+/* map */
+#map {
+    height: 400px;
+    width: 80vh;
 }
