@@ -70,9 +70,9 @@ const sessionOption = {
     }
 }
 
-// app.get("/", (req, res) => {
-//     res.send("TripNest")
-// })
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+})
 
 
 
